@@ -30,11 +30,3 @@ Run a solution with Python 3 and provide input using standard input:
 ```sh
 python3 solutions/332-addition.py
 ```
-
-## Verification
-
-Run the repository checks with:
-
-```sh
-python3 -m pytest -q
-```
