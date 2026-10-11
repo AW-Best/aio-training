@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIO Python 手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f2f4f0;
+    --paper-raised: #ffffff;
+    --ink: #182420;
+    --muted: #5b6b62;
+    --faint: #8a988f;
+    --line: #d9ddd3;
+    --line-strong: #c2c9bb;
+    --accent: #c46a1f;
+    --accent-ink: #7a4113;
+    --accent-soft: #f3e2cd;
+    --good: #2f7d5a;
+    --good-soft: #dcefe3;
+    --bad: #b3453f;
+    --bad-soft: #f6e0de;
+    --code-bg: #191f1b;
+    --code-ink: #e7ece6;
+    --code-comment: #7e9184;
+    --code-line: #2b332d;
+    --shadow: 0 1px 2px rgba(24,36,32,0.06), 0 8px 24px rgba(24,36,32,0.07);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #121814;
+      --paper-raised: #1a221c;
+      --ink: #e9ede7;
+      --muted: #9fb0a5;
+      --faint: #6e8177;
+      --line: #2b342d;
+      --line-strong: #3a453b;
+      --accent: #e2965a;
+      --accent-ink: #f4d3ab;
+      --accent-soft: #3a2a18;
+      --good: #6fc298;
+      --good-soft: #1d332a;
+      --bad: #e2837c;
+      --bad-soft: #3a2320;
+      --code-bg: #0d120e;
+      --code-ink: #e7ece6;
+      --code-comment: #64796b;
+      --code-line: #232b25;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #121814;
+    --paper-raised: #1a221c;
+    --ink: #e9ede7;
+    --muted: #9fb0a5;
+    --faint: #6e8177;
+    --line: #2b342d;
+    --line-strong: #3a453b;
+    --accent: #e2965a;
+    --accent-ink: #f4d3ab;
+    --accent-soft: #3a2a18;
+    --good: #6fc298;
+    --good-soft: #1d332a;
+    --bad: #e2837c;
+    --bad-soft: #3a2320;
+    --code-bg: #0d120e;
+    --code-ink: #e7ece6;
+    --code-comment: #64796b;
+    --code-line: #232b25;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Work Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { font-family: "Fraunces", "Songti SC", serif; text-wrap: balance; }
+
+  a { color: inherit; }
+
+  code, .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  /* ---------- shell layout ---------- */
+  .shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+  }
+
+  header.masthead {
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 5px 11px;
+    border-radius: 4px;
+  }
+  h1.title {
+    font-size: clamp(32px, 5vw, 46px);
+    font-weight: 600;
+    margin: 18px 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .dek {
+    max-width: 62ch;
+    color: var(--muted);
+    font-size: 16.5px;
+    margin: 0 0 20px;
+  }
+  .howto {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    max-width: 62ch;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  .howto strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- body grid: nav + content ---------- */
+  .body-grid {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 56px;
+    padding-top: 40px;
+    align-items: start;
+  }
+
+  nav.toc {
+    position: sticky;
+    top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  nav.toc .toc-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 10px;
+  }
+  nav.toc a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    border-left: 2px solid transparent;
+  }
+  nav.toc a:hover { color: var(--ink); background: var(--paper-raised); }
+  nav.toc a.current { color: var(--accent-ink); border-left-color: var(--accent); font-weight: 500; }
+
+  main { min-width: 0; display: flex; flex-direction: column; gap: 64px; }
+
+  section.topic { scroll-margin-top: 28px; }
+  .topic-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .ext-link {
+    margin-left: auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--faint);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .ext-link:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .topic-num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    color: var(--faint);
+    min-width: 20px;
+  }
+  h2.topic-title {
+    font-size: 23px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .topic-body { padding-left: 32px; }
+  .topic-body > p { color: var(--muted); max-width: 62ch; margin: 0 0 16px; }
+  .topic-body h3.sub {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 32px 0 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .topic-body h3.sub .mono { font-size: 12px; font-weight: 500; color: var(--faint); }
+
+  .codeblock {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  .codeblock pre {
+    margin: 0;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13.5px;
+    line-height: 1.65;
+    white-space: pre;
+  }
+  .codeblock .c { color: var(--code-comment); }
+
+  .callout {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    max-width: 62ch;
+  }
+  .callout.warn { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+  .callout .tag {
+    flex-shrink: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border-radius: 4px;
+    padding: 3px 7px;
+    height: fit-content;
+    white-space: nowrap;
+  }
+  .callout p { margin: 0; font-size: 14px; color: var(--muted); }
+  .callout code { font-size: 13px; color: var(--ink); }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  @media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) {
+    .topic-head { flex-wrap: wrap; }
+    .ext-link { margin-left: 0 !important; }
+  }
+  .pair .card {
+    border-radius: 7px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+  }
+  .pair .card.bad { background: var(--bad-soft); }
+  .pair .card.good { background: var(--good-soft); }
+  .pair .card .label {
+    display: block;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .pair .card.bad .label { color: var(--bad); }
+  .pair .card.good .label { color: var(--good); }
+  .pair .card code { font-family: "JetBrains Mono", monospace; color: var(--ink); }
+
+  /* ---------- worked example ---------- */
+  .worked {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow);
+  }
+  .worked .prob {
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+    margin-bottom: 18px;
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  .worked .prob strong { color: var(--ink); }
+  .steps { display: flex; flex-direction: column; gap: 16px; }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 12px; }
+  .step .dot {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    display: grid; place-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px; font-weight: 600;
+  }
+  .step .txt { font-size: 14.5px; color: var(--muted); padding-top: 3px; }
+  .step .txt strong { color: var(--ink); }
+
+  /* ---------- checklist ---------- */
+  .checklist { display: flex; flex-direction: column; gap: 10px; max-width: 62ch; }
+  .check-item {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 14.5px;
+  }
+  .check-item .box {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 4px;
+    margin-top: 2px;
+  }
+  .check-item code { font-size: 13px; }
+
+  footer.page-foot {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    color: var(--faint);
+    font-size: 13px;
+  }
+
+  @media (max-width: 860px) {
+    .body-grid { grid-template-columns: 1fr; gap: 24px; }
+    nav.toc {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    nav.toc .toc-label { display: none; }
+    nav.toc a { border-left: none; border: 1px solid var(--line); font-size: 12.5px; padding: 5px 9px; }
+    nav.toc a.current { border-color: var(--accent); background: var(--accent-soft); }
+    .topic-body { padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="masthead">
+    <span class="eyebrow">刷题准备 · Australian Informatics Olympiad</span>
+    <h1 class="title">Python 语法复习</h1>
+    <p class="dek">这不是从头学 Python——是为了下节课开始碰 AIO 真题，先把"能自己写、不查资料"的那部分语法过一遍。你之前学过 Python，这里只挑竞赛做题真正用得到的部分，故意不覆盖多余的东西。</p>
+    <div class="howto">
+      <span>💡</span>
+      <p><strong>怎么用这页：</strong>每一小节先自己盖住代码，想想"这句话我能不能自己打出来"，想不出来再看示例。光读一遍记不住，照着代码块自己在电脑上敲一遍，比只用眼睛看有用得多。</p>
+    </div>
+  </header>
+
+  <div class="body-grid">
+    <nav class="toc" id="toc">
+      <span class="toc-label">目录</span>
+      <a href="#io">1 · 输入输出</a>
+      <a href="#types">2 · 变量与类型</a>
+      <a href="#ops">3 · 运算符</a>
+      <a href="#cond">4 · 条件判断</a>
+      <a href="#loop">5 · 循环</a>
+      <a href="#list">6 · 列表</a>
+      <a href="#map">7 · map()</a>
+      <a href="#dict">8 · 字典（哈希表）</a>
+      <a href="#func">9 · 函数</a>
+      <a href="#str">10 · 字符串</a>
+      <a href="#traps">11 · 常见坑清单</a>
+      <a href="#worked">12 · 完整例题</a>
+      <a href="#check">13 · 自测清单</a>
+    </nav>
+
+    <main>
+
+      <section class="topic" id="io">
+        <div class="topic-head"><span class="topic-num">01</span><h2 class="topic-title">输入输出</h2><a class="ext-link" href="https://www.w3schools.com/python/python_user_input.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>AIO 判题是拿你程序的输出，跟标准答案逐字比对的。格式差一个字都算错，所以这一节比其他语法都重要。</p>
+          <div class="codeblock"><pre><span class="c"># 读一行、当字符串处理</span>
+name = input()
+
+<span class="c"># 读一个整数（input() 拿到的永远是字符串，要自己转类型）</span>
+n = int(input())
+
+<span class="c"># .strip() 去掉首尾多余的空格和换行，养成习惯每次读入都加上</span>
+n = int(input().strip())
+
+<span class="c"># 一行里有多个数字，用空格隔开，比如 "3 5 8"</span>
+a, b, c = map(int, input().split())
+
+<span class="c"># 输出</span>
+print(a + b + c)</pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>忘记 <code>int()</code> 转换，会把 <code>"3"</code> 当成字符串直接跟别的字符串拼在一起，而不是数字相加。</p>
+          </div>
+          <p style="margin-top:16px">有些题目输入不止一行——比如先给一个 <code>n</code>，接下来 <code>n</code> 行每行一个数字，这时候要用循环，一行一行读：</p>
+          <div class="codeblock"><pre><span class="c"># 第一行是 n，接下来 n 行，每行一个整数</span>
+n = int(input().strip())
+total = 0
+for i in range(n):
+    total += int(input().strip())
+
+print(total)</pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>看到"接下来若干行"先数清楚要读几行——是 <code>n</code> 行，还是题目另外给了行数，读多读少都会导致后面全错位。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="types">
+        <div class="topic-head"><span class="topic-num">02</span><h2 class="topic-title">变量与类型</h2><a class="ext-link" href="https://www.w3schools.com/python/python_datatypes.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>Python 不用先声明类型，赋值的时候类型就定了。竞赛题里主要用这四种。</p>
+          <div class="codeblock"><pre>age = 14          <span class="c"># int，整数</span>
+score = 92.5      <span class="c"># float，小数</span>
+name = "Aaron"    <span class="c"># str，字符串</span>
+passed = True     <span class="c"># bool，True / False（首字母大写）</span>
+
+type(age)         <span class="c"># 想不确定的时候，直接打印看类型</span></pre></div>
+        </div>
+      </section>
+
+      <section class="topic" id="ops">
+        <div class="topic-head"><span class="topic-num">03</span><h2 class="topic-title">运算符</h2><a class="ext-link" href="https://www.w3schools.com/python/python_operators.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>除法这两个最容易搞混，竞赛题里几乎每题都会用到其中一个。</p>
+          <div class="codeblock"><pre>7 / 2    <span class="c"># 3.5   —— 普通除法，结果永远是小数</span>
+7 // 2   <span class="c"># 3     —— 整除，只要商的整数部分</span>
+7 % 2    <span class="c"># 1     —— 取余数</span>
+2 ** 10  <span class="c"># 1024  —— 乘方</span>
+
+3 == 3   <span class="c"># True  —— 判断相等用两个等号</span>
+3 != 4   <span class="c"># True  —— 不等于</span>
+a > 3 and b < 10   <span class="c"># 且</span>
+a > 3 or b < 10    <span class="c"># 或</span></pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>判断相等是 <code>==</code>，写成一个 <code>=</code> 会变成赋值，是完全不同的意思。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="cond">
+        <div class="topic-head"><span class="topic-num">04</span><h2 class="topic-title">条件判断</h2><a class="ext-link" href="https://www.w3schools.com/python/python_conditions.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>Python 不用花括号分块，靠<strong style="color:var(--ink)">缩进</strong>决定哪些代码属于 if 里面。这是 Python 和你写过的 JS 最不一样的地方。</p>
+          <div class="codeblock"><pre>if score >= 90:
+    print("优秀")
+elif score >= 60:
+    print("及格")
+else:
+    print("不及格")</pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>同一层的代码缩进必须完全对齐（通常是 4 个空格），缩进错一格程序直接报错，这也是从 JS 转过来最容易踩的坑——JS 靠 <code>{ }</code>，Python 靠空格。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="loop">
+        <div class="topic-head"><span class="topic-num">05</span><h2 class="topic-title">循环</h2><a class="ext-link" href="https://www.w3schools.com/python/python_for_loops.asp" target="_blank" rel="noopener">W3Schools: for ↗</a><a class="ext-link" style="margin-left:0" href="https://www.w3schools.com/python/python_while_loops.asp" target="_blank" rel="noopener">while ↗</a></div>
+        <div class="topic-body">
+          <p>竞赛题里 <code>for</code> 用得远比 <code>while</code> 多，主要是配合 <code>range()</code> 循环固定次数，或者遍历一个列表。</p>
+          <div class="codeblock"><pre><span class="c"># 循环 5 次，i 依次是 0,1,2,3,4</span>
+for i in range(5):
+    print(i)
+
+<span class="c"># 遍历列表里的每一个元素</span>
+for x in [10, 20, 30]:
+    print(x)
+
+<span class="c"># while：不知道要循环几次，只知道停止条件</span>
+n = 100
+count = 0
+while n > 1:
+    n = n // 2
+    count += 1
+
+<span class="c"># break 立刻跳出循环，continue 跳过这一轮剩下的部分</span></pre></div>
+        </div>
+      </section>
+
+      <section class="topic" id="list">
+        <div class="topic-head"><span class="topic-num">06</span><h2 class="topic-title">列表（list）</h2><a class="ext-link" href="https://www.w3schools.com/python/python_lists.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>相当于 JS 里的数组，几乎每道 AIO 题都要用它存一串数字或字符串。</p>
+          <div class="codeblock"><pre>nums = [3, 7, 1, 9]
+
+nums[0]        <span class="c"># 3   —— 索引从 0 开始</span>
+nums[-1]       <span class="c"># 9   —— -1 是最后一个</span>
+len(nums)      <span class="c"># 4   —— 长度</span>
+
+nums.append(5) <span class="c"># 在末尾加一个元素 → [3,7,1,9,5]</span>
+nums.sort()    <span class="c"># 原地排序 → [1,3,5,7,9]</span>
+max(nums)      <span class="c"># 最大值</span>
+sum(nums)      <span class="c"># 求和</span>
+
+3 in nums      <span class="c"># True —— 判断某个值在不在列表里</span>
+
+<span class="c"># 一行读入 n 个数，存成列表——这个写法竞赛题里几乎天天用</span>
+nums = list(map(int, input().split()))</pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>访问超出范围的下标（比如列表长度是 4，却去取 <code>nums[4]</code>）会直接报错崩溃，这在判题时经常是"运行时错误"的原因。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="map">
+        <div class="topic-head"><span class="topic-num">07</span><h2 class="topic-title">map()</h2><a class="ext-link" href="https://www.w3schools.com/python/ref_func_map.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>前面几节里 <code>map(int, input().split())</code> 已经出现好几次了——这节把它讲透。<code>map(函数, 列表)</code> 的意思是"把这个函数依次套用到列表的每一个元素上"，不用自己写循环。</p>
+          <div class="codeblock"><pre><span class="c"># split() 把一行按空格拆开，得到的是字符串列表</span>
+"3 7 1".split()          <span class="c"># ['3', '7', '1']  —— 注意还是字符串，不是数字</span>
+
+<span class="c"># map(int, ...) 把 int() 套用到每一个元素上，逐个转成整数</span>
+map(int, ["3", "7", "1"])   <span class="c"># 一个 map 对象，还看不到里面的值</span>
+
+<span class="c"># 想看到结果 / 想用下标访问，必须用 list() 包一层</span>
+list(map(int, ["3", "7", "1"]))   <span class="c"># [3, 7, 1]</span>
+
+<span class="c"># 所以竞赛题里最常见的写法就是这两个连在一起用：</span>
+nums = list(map(int, input().split()))</pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p><code>map()</code> 自己返回的是一个"还没算"的 map 对象，不是列表，不能直接用 <code>nums[0]</code> 这样取下标，也不能直接 <code>print()</code> 看到内容——必须先 <code>list(map(...))</code> 转成列表才能这样用。</p>
+          </div>
+          <p style="margin-top:16px">反过来，<strong style="color:var(--ink)">输出</strong>一串数字、要求用空格隔开的时候，<code>map()</code> 配合 <code>str</code> 也是标准写法——因为 <code>print()</code> 要求给它字符串，不能直接把一列整数拼起来：</p>
+          <div class="codeblock"><pre>nums = [3, 7, 1]
+
+<span class="c"># 想输出 "3 7 1"，先把每个数字变成字符串，再用空格拼起来</span>
+print(" ".join(map(str, nums)))    <span class="c"># 3 7 1</span>
+
+<span class="c"># 更简单的等价写法：print() 自带按空格分隔多个参数的功能</span>
+print(*nums)                        <span class="c"># 3 7 1，效果一样，AIO 题目输出一行数字时最常用</span></pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p><code>" ".join(nums)</code>（漏了 <code>map(str, ...)</code>）会直接报错，因为 <code>join()</code> 只能拼字符串，<code>nums</code> 里存的是整数——这跟"读入忘了 <code>int()</code>"是同一类问题反过来的版本。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="dict">
+        <div class="topic-head"><span class="topic-num">08</span><h2 class="topic-title">字典（哈希表）</h2><a class="ext-link" href="https://www.w3schools.com/python/python_dictionaries.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>字典（<code>dict</code>）就是 Python 里的哈希表——存"键 → 值"的对应关系，通过键几乎瞬间就能查到值，不用像列表那样一个个找。AIO 题目里最常见的用法是<strong style="color:var(--ink)">计数</strong>：统计一串数字/字符里每个值各出现了几次。</p>
+          <div class="codeblock"><pre><span class="c"># 创建一个空字典，往里面存 键:值</span>
+d = {}
+d["apple"] = 3
+d["pear"] = 5
+
+d["apple"]        <span class="c"># 3   —— 用键直接查值，接近瞬间完成</span>
+"apple" in d       <span class="c"># True —— 判断某个键在不在字典里</span>
+len(d)             <span class="c"># 2   —— 有几个键</span></pre></div>
+          <p style="margin-top:16px">最常用的套路——遍历一个列表，用字典给每个值计数：</p>
+          <div class="codeblock"><pre>nums = [3, 7, 3, 1, 7, 3]
+count = {}
+
+for x in nums:
+    if x in count:
+        count[x] += 1
+    else:
+        count[x] = 1
+
+<span class="c"># count 现在是 {3: 3, 7: 2, 1: 1}</span>
+
+<span class="c"># 更短的等价写法，用 .get(键, 找不到时的默认值)：</span>
+count2 = {}
+for x in nums:
+    count2[x] = count2.get(x, 0) + 1</pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>直接用 <code>count[x] += 1</code> 而没先判断 <code>x</code> 在不在字典里，如果 <code>x</code> 是第一次出现会报 <code>KeyError</code>（因为字典里还没有这个键，没法对它"+1"）。这是"访问不存在的键"版本的越界错误，跟列表访问超出下标是同一类坑。</p>
+          </div>
+          <p style="margin-top:16px">遍历字典，同时拿到键和值——找"出现次数最多的元素"这类题目会用到：</p>
+          <div class="codeblock"><pre>for key, value in count.items():
+    print(key, "出现了", value, "次")
+
+<span class="c"># 找出现次数最多的元素，两种常用写法：</span>
+max(count, key=count.get)     <span class="c"># 3 —— 出现最多的那个键</span></pre></div>
+        </div>
+      </section>
+
+      <section class="topic" id="func">
+        <div class="topic-head"><span class="topic-num">09</span><h2 class="topic-title">函数</h2><a class="ext-link" href="https://www.w3schools.com/python/python_functions.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>把重复用到的逻辑包起来，AIO 题目一般不强制要求写函数，但拆出来更容易自己检查对不对。</p>
+          <div class="codeblock"><pre>def is_even(x):
+    return x % 2 == 0
+
+def add(a, b):
+    return a + b
+
+print(is_even(6))     <span class="c"># True</span>
+print(add(3, 4))       <span class="c"># 7</span></pre></div>
+        </div>
+      </section>
+
+      <section class="topic" id="str">
+        <div class="topic-head"><span class="topic-num">10</span><h2 class="topic-title">字符串</h2><a class="ext-link" href="https://www.w3schools.com/python/python_strings.asp" target="_blank" rel="noopener">W3Schools ↗</a></div>
+        <div class="topic-body">
+          <p>AIO 有不少题的输入是一串字母——方向指令、DNA 序列、单词。字符串可以看成"一列字符"，所以列表那一套（下标、遍历、排序）大部分都能直接用，只是有几处不一样，下面单独标出来。</p>
+
+          <h3 class="sub"><span class="mono">10.1</span>拼接与拆分</h3>
+          <p>拼数字和文字一起输出时最常用 f-string，比一堆 <code>+</code> 号拼接清楚很多。</p>
+          <div class="codeblock"><pre>name = "Aaron"
+score = 92
+
+print(f"{name} 得了 {score} 分")   <span class="c"># Aaron 得了 92 分</span>
+
+"3,7,1".split(",")    <span class="c"># ['3', '7', '1']</span>
+"-".join(["a","b","c"])   <span class="c"># 'a-b-c'</span>
+len("hello")           <span class="c"># 5</span></pre></div>
+
+          <h3 class="sub"><span class="mono">10.2</span>下标与切片</h3>
+          <p>下标跟列表完全一样。切片 <code>s[开始:结束]</code> 取出一段，<strong style="color:var(--ink)">包含开始、不包含结束</strong>。</p>
+          <div class="codeblock"><pre>s = "hello"
+
+s[0]        <span class="c"># 'h'    —— 第一个字符</span>
+s[-1]       <span class="c"># 'o'    —— 最后一个字符</span>
+s[1:4]      <span class="c"># 'ell'  —— 下标 1、2、3，不含 4</span>
+s[:3]       <span class="c"># 'hel'  —— 省略开始 = 从头取</span>
+s[2:]       <span class="c"># 'llo'  —— 省略结束 = 取到末尾</span>
+s[::-1]     <span class="c"># 'olleh' —— 倒过来，判断回文最常用</span>
+
+s == s[::-1]    <span class="c"># False —— "hello" 不是回文；"level" 就是 True</span></pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>下标越界会报错（<code>s[10]</code> → <code>IndexError</code>），但<strong>切片越界不会</strong>——<code>s[1:100]</code> 安安静静返回 <code>'ello'</code>。所以切片写错了程序不会崩，只会悄悄给出错的答案，更难发现。</p>
+          </div>
+
+          <h3 class="sub"><span class="mono">10.3</span>遍历字符串</h3>
+          <p>三种写法，按"需要知道什么"来选：只要字符本身、只要位置、两个都要。</p>
+          <div class="codeblock"><pre><span class="c"># ① 只关心字符本身：直接 for ch in s</span>
+word = "education"
+vowels = 0
+for ch in word:
+    if ch in "aeiou":        <span class="c"># in 也能判断"这个字符在不在一串字符里"</span>
+        vowels += 1
+print(vowels)                <span class="c"># 5</span>
+
+<span class="c"># ② 需要比较前后相邻的字符：用下标 i</span>
+s = "aabccc"
+same = 0
+for i in range(len(s) - 1):  <span class="c"># 注意是 len(s) - 1，否则 s[i+1] 越界</span>
+    if s[i] == s[i + 1]:
+        same += 1
+print(same)                  <span class="c"># 3 —— aa、cc、cc</span>
+
+<span class="c"># ③ 位置和字符都要：enumerate()</span>
+for i, ch in enumerate("abc"):
+    print(i, ch)             <span class="c"># 0 a / 1 b / 2 c</span></pre></div>
+          <p style="margin-top:16px">遍历时经常要"挑出一部分字符，拼成新字符串"——从空字符串开始，一个个往上加：</p>
+          <div class="codeblock"><pre>s = "a1b2c3"
+digits = ""
+for ch in s:
+    if ch.isdigit():
+        digits += ch
+print(digits)                <span class="c"># 123</span></pre></div>
+
+          <h3 class="sub"><span class="mono">10.4</span>字符串不能原地修改</h3>
+          <p>这是字符串和列表<strong style="color:var(--ink)">最大的不同</strong>：列表可以 <code>nums[0] = 5</code> 直接改，字符串不行。想改某个位置的字符，要先转成列表，改完再拼回来。</p>
+          <div class="codeblock"><pre>s = "hello"
+s[0] = "j"               <span class="c"># ✗ 报错 TypeError：字符串不能改</span>
+
+chars = list(s)          <span class="c"># ['h', 'e', 'l', 'l', 'o']</span>
+chars[0] = "j"
+s = "".join(chars)       <span class="c"># 'jello'</span></pre></div>
+
+          <h3 class="sub"><span class="mono">10.5</span>排序</h3>
+          <p>字符串<strong style="color:var(--ink)">没有</strong> <code>.sort()</code>（因为不能原地修改），要用 <code>sorted()</code>——它返回的是一个<strong style="color:var(--ink)">字符列表</strong>，想要字符串还得 <code>"".join()</code> 拼回去。</p>
+          <div class="codeblock"><pre>sorted("banana")                        <span class="c"># ['a', 'a', 'a', 'b', 'n', 'n'] —— 列表！</span>
+"".join(sorted("banana"))               <span class="c"># 'aaabnn'</span>
+"".join(sorted("banana", reverse=True)) <span class="c"># 'nnbaaa' —— 从大到小</span>
+
+<span class="c"># 经典用法：判断两个词是不是"字母相同、顺序不同"（变位词）</span>
+sorted("listen") == sorted("silent")    <span class="c"># True</span></pre></div>
+          <p style="margin-top:16px">给一列单词排序时，默认是<strong style="color:var(--ink)">字典序</strong>——像查字典一样，从第一个字母开始逐个比。想按别的规则排，用 <code>key=</code> 告诉它"拿什么来比"：</p>
+          <div class="codeblock"><pre>"apple" &lt; "banana"       <span class="c"># True —— 字符串也能直接比大小，比的就是字典序</span>
+
+words = ["banana", "Cherry", "apple"]
+sorted(words)                 <span class="c"># ['Cherry', 'apple', 'banana'] —— 大写字母排在所有小写前面！</span>
+sorted(words, key=str.lower)  <span class="c"># ['apple', 'banana', 'Cherry'] —— 忽略大小写</span>
+
+sorted(["pear", "fig", "apple"], key=len)   <span class="c"># ['fig', 'pear', 'apple'] —— 按长度</span></pre></div>
+          <div class="callout warn">
+            <span class="tag">易错</span>
+            <p>数字如果还是字符串，排序结果会是错的：<code>sorted(["10", "9", "100"])</code> 得到 <code>['10', '100', '9']</code>，因为按字典序 <code>"1"</code> 比 <code>"9"</code> 小。读入后先 <code>map(int, ...)</code> 转成整数再排，才是 <code>[9, 10, 100]</code>。</p>
+          </div>
+
+          <h3 class="sub"><span class="mono">10.6</span>常用方法速查</h3>
+          <p>这些不用背，知道"有这么个东西"，要用时回来查。注意它们都<strong style="color:var(--ink)">返回新字符串</strong>，原来的 <code>s</code> 不变，要用结果就得赋值。</p>
+          <div class="codeblock"><pre>"hello".count("l")        <span class="c"># 2      —— 出现了几次</span>
+"hello".find("ll")        <span class="c"># 2      —— 第一次出现的下标</span>
+"hello".find("z")         <span class="c"># -1     —— 找不到返回 -1（不报错）</span>
+"hello".replace("l", "L") <span class="c"># 'heLLo' —— 全部替换</span>
+"hello".startswith("he")  <span class="c"># True</span>
+
+"Hello".upper()           <span class="c"># 'HELLO'</span>
+"Hello".lower()           <span class="c"># 'hello' —— 题目说"不区分大小写"时先统一转小写</span>
+
+"123".isdigit()           <span class="c"># True  —— 全是数字吗</span>
+"abc".isalpha()           <span class="c"># True  —— 全是字母吗</span>
+"a1".isalpha()            <span class="c"># False</span></pre></div>
+
+          <h3 class="sub"><span class="mono">10.7</span>字符 ↔ 数字：ord() 和 chr()</h3>
+          <p>每个字符在电脑里都有一个编号。<code>ord()</code> 查编号，<code>chr()</code> 反过来。竞赛里最常见的用途是"字母是第几个"和"字母往后移几位"。</p>
+          <div class="codeblock"><pre>ord("a")              <span class="c"># 97</span>
+ord("A")              <span class="c"># 65  —— 大写和小写编号不同</span>
+chr(98)               <span class="c"># 'b'</span>
+
+<span class="c"># 字母是字母表里第几个（从 0 开始）：a→0, b→1, c→2 …</span>
+ord("c") - ord("a")   <span class="c"># 2</span>
+
+<span class="c"># 字母往后移 3 位，超过 z 绕回 a（凯撒密码）</span>
+ch = "x"
+chr((ord(ch) - ord("a") + 3) % 26 + ord("a"))   <span class="c"># 'a'</span></pre></div>
+          <div class="callout">
+            <span class="tag">连起来</span>
+            <p>统计"每个字母出现几次"，用第 8 节的字典计数套路，把 <code>for x in nums</code> 换成 <code>for ch in s</code> 就行——下一节课的例题就是这么做的。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="traps">
+        <div class="topic-head"><span class="topic-num">11</span><h2 class="topic-title">常见坑清单</h2></div>
+        <div class="topic-body">
+          <p>这些是判题时最常出现"明明思路对却拿不到分"的原因，出问题先查这里。</p>
+          <div class="pair">
+            <div class="card bad"><span class="label">✗ 容易写错</span><code>input()</code> 直接拿去加法运算</div>
+            <div class="card good"><span class="label">✓ 应该这样</span><code>int(input())</code> 先转成数字</div>
+          </div>
+          <div class="pair">
+            <div class="card bad"><span class="label">✗ 容易写错</span>缩进用了 3 个空格，下一行用了 4 个</div>
+            <div class="card good"><span class="label">✓ 应该这样</span>同一层永远保持相同的缩进数量</div>
+          </div>
+          <div class="pair">
+            <div class="card bad"><span class="label">✗ 容易写错</span>用 <code>/</code> 算下标或计数</div>
+            <div class="card good"><span class="label">✓ 应该这样</span>需要整数结果时用 <code>//</code></div>
+          </div>
+          <div class="pair">
+            <div class="card bad"><span class="label">✗ 容易写错</span>循环里用 <code>nums[i+1]</code> 没检查越界</div>
+            <div class="card good"><span class="label">✓ 应该这样</span>先确认 <code>i+1 &lt; len(nums)</code></div>
+          </div>
+          <div class="pair">
+            <div class="card bad"><span class="label">✗ 容易写错</span><code>s[0] = "j"</code> 或 <code>s.sort()</code> 直接改字符串</div>
+            <div class="card good"><span class="label">✓ 应该这样</span>先 <code>list(s)</code> 改完再 <code>"".join()</code>；排序用 <code>sorted(s)</code></div>
+          </div>
+          <div class="pair">
+            <div class="card bad"><span class="label">✗ 容易写错</span>数字还是字符串就排序，<code>"10"</code> 排在 <code>"9"</code> 前面</div>
+            <div class="card good"><span class="label">✓ 应该这样</span>先 <code>map(int, ...)</code> 转成整数再排</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="worked">
+        <div class="topic-head"><span class="topic-num">12</span><h2 class="topic-title">完整例题：从读题到写完</h2></div>
+        <div class="topic-body">
+          <p>把上面这些语法串起来看一遍完整流程——这就是几乎所有 AIO 简单题的固定套路。</p>
+          <div class="worked">
+            <div class="prob"><strong>题目：</strong>第一行输入一个整数 n，第二行输入 n 个用空格隔开的整数，输出其中的最大值和它们的总和，用空格隔开。</div>
+            <div class="steps">
+              <div class="step"><span class="dot">1</span><div class="txt"><strong>读懂输入格式</strong> —— 两行：第一行是个数 n，第二行是 n 个数。</div></div>
+              <div class="step"><span class="dot">2</span><div class="txt"><strong>想清楚要算什么</strong> —— 最大值用 <code>max()</code>，总和用 <code>sum()</code>，都是列表现成的函数。</div></div>
+              <div class="step"><span class="dot">3</span><div class="txt"><strong>想清楚输出格式</strong> —— 两个数中间一个空格，不能多逗号也不能少空格。</div></div>
+            </div>
+            <div class="codeblock" style="margin-top:18px"><pre>n = int(input())
+nums = list(map(int, input().split()))
+
+biggest = max(nums)
+total = sum(nums)
+
+print(biggest, total)</pre></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="topic" id="check">
+        <div class="topic-head"><span class="topic-num">13</span><h2 class="topic-title">下节课前自测</h2></div>
+        <div class="topic-body">
+          <p>不用全对，卡住的地方就是下节课重点练的地方。别用 AI，自己在电脑上试。</p>
+          <div class="checklist">
+            <div class="check-item"><span class="box"></span><span>读入两个整数（一行一个），输出它们的乘积。</span></div>
+            <div class="check-item"><span class="box"></span><span>读入一行数字，输出其中的偶数有几个。</span></div>
+            <div class="check-item"><span class="box"></span><span>写一个 <code>for</code> 循环，把 1 到 100 的和算出来。</span></div>
+            <div class="check-item"><span class="box"></span><span>写一个函数 <code>is_prime(x)</code>，判断 x 是不是质数（提示：用 <code>%</code>）。</span></div>
+            <div class="check-item"><span class="box"></span><span>读入一个整数列表，输出排序后的结果。</span></div>
+            <div class="check-item"><span class="box"></span><span>读入一个单词，判断它是不是回文（正着读反着读一样，比如 <code>level</code>）。</span></div>
+            <div class="check-item"><span class="box"></span><span>读入一行字符串，数出里面有几个大写字母（提示：遍历 + <code>.isupper()</code>，或者比较 <code>ch != ch.lower()</code>）。</span></div>
+            <div class="check-item"><span class="box"></span><span>读入两个单词，输出 <code>YES</code> 或 <code>NO</code>：它们是不是由完全相同的字母组成（提示：<code>sorted()</code>）。</span></div>
+            <div class="check-item"><span class="box"></span><span>读入一个单词，把里面的字母按从小到大排好，输出成一个字符串（不是列表）。</span></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="page-foot">AIO Python 手册 · 复习用，不是完整教程 · 配合线下课使用 · 每节标题右侧 <a href="https://www.w3schools.com/python/" target="_blank" rel="noopener">W3Schools ↗</a> 链接对应查语法用，不用整套跟着学</footer>
+
+</div>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var sections = links.map(function (a) {
+      return document.querySelector(a.getAttribute('href'));
+    });
+    function onScroll() {
+      var pos = window.scrollY + 120;
+      var idx = 0;
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i] && sections[i].offsetTop <= pos) idx = i;
+      }
+      links.forEach(function (a, i) {
+        a.classList.toggle('current', i === idx);
+      });
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+
+</body>
+</html>
