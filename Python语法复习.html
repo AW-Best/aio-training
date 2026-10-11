@@ -428,6 +428,27 @@ a, b, c = map(int, input().split())
 
 <span class="c"># 输出</span>
 print(a + b + c)</pre></div>
+          <h3 class="sub"><span class="mono">1.1</span>一行输入多个数</h3>
+          <p>如果输入是 <code>1 2 3 4</code>，四个数都在同一行，就先用 <code>split()</code> 按空格拆开，再用 <code>map(int, ...)</code> 把每一项转成整数：</p>
+          <div class="codeblock"><pre><span class="c"># 输入：1 2 3 4</span>
+numbers = list(map(int, input().split()))
+
+print(numbers)       <span class="c"># [1, 2, 3, 4]</span>
+print(sum(numbers))  <span class="c"># 10</span></pre></div>
+
+          <h3 class="sub"><span class="mono">1.2</span>多行输入，每行一个数</h3>
+          <p>如果输入的 <code>1</code>、<code>2</code>、<code>3</code>、<code>4</code> 各占一行，就要调用四次 <code>input()</code>。可以用循环把它们依次加入列表：</p>
+          <div class="codeblock"><pre><span class="c"># 输入：</span>
+<span class="c"># 1</span>
+<span class="c"># 2</span>
+<span class="c"># 3</span>
+<span class="c"># 4</span>
+numbers = []
+for _ in range(4):
+    numbers.append(int(input().strip()))
+
+print(numbers)       <span class="c"># [1, 2, 3, 4]</span>
+print(sum(numbers))  <span class="c"># 10</span></pre></div>
           <div class="callout warn">
             <span class="tag">易错</span>
             <p>忘记 <code>int()</code> 转换，会把 <code>"3"</code> 当成字符串直接跟别的字符串拼在一起，而不是数字相加。</p>
